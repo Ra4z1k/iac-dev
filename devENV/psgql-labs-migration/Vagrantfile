@@ -1,0 +1,34 @@
+Vagrant.configure("2") do |config|
+
+  config.vm.define :'lab-migration-pgsql01' do |node1|
+      node1.vm.box = 'generic-x64/debian12'
+      #node1.vm.box = 'generic/ubuntu1604'
+      node1.vm.hostname = 'lab-migration-pgsql01'
+      node1.vm.network "public_network", bridge: "Default Switch"
+      node1.vm.provider "hyperv" do |vb|
+        vb.vmname = 'lab-migration-pgsql01'
+        vb.memory = 2048
+        vb.cpus = 2
+        vb.auto_start_action = "Nothing"
+        vb.auto_stop_action = "ShutDown"
+  config.vm.provision "shell",
+      name: "postgresql", path: "init-setup/pgsql16-init.sh", privileged: true
+    end
+  end
+  
+  config.vm.define :'lab-migration-pgsql02' do |node2|
+      node2.vm.box = 'generic-x64/debian12'
+      node2.vm.hostname =  'lab-migration-pgsql02'
+      node2.vm.network "public_network", bridge: "Default Switch"
+      node2.vm.provider "hyperv" do |vb|
+        vb.vmname = 'lab-migration-pgsql02'
+        vb.memory = 2048
+        vb.cpus = 2
+        vb.auto_start_action = "Nothing"
+        vb.auto_stop_action = "ShutDown"
+   config.vm.provision "shell",
+      name: "postgresql", path: "init-setup/pgsql17-init.sh", privileged: true
+    end
+  end
+end
+

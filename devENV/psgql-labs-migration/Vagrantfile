@@ -11,8 +11,8 @@ Vagrant.configure("2") do |config|
         vb.cpus = 2
         vb.auto_start_action = "Nothing"
         vb.auto_stop_action = "ShutDown"
-  config.vm.provision "shell",
-      name: "postgresql", path: "init-setup/pgsql16-init.sh", privileged: true
+      node1.vm.provision "shell",
+      name: "postgresql-16", path: "init-setup/pgsql16-init.sh", privileged: true
     end
   end
   
@@ -26,8 +26,8 @@ Vagrant.configure("2") do |config|
         vb.cpus = 2
         vb.auto_start_action = "Nothing"
         vb.auto_stop_action = "ShutDown"
-   config.vm.provision "shell",
-      name: "postgresql", path: "init-setup/pgsql17-init.sh", privileged: true
+      node2.vm.provision "shell",
+      name: "postgresql-17", path: "init-setup/pgsql17-init.sh", privileged: true
     end
   end
 end

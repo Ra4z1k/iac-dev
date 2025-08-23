@@ -1,0 +1,79 @@
+Vagrant.configure("2") do |config|
+
+  config.vm.define :'lab-pgsql01' do |node1|
+      node1.vm.box = 'generic-x64/debian12'
+      #node1.vm.box = 'generic/ubuntu1604'
+      node1.vm.hostname = 'lab-pgsql01'
+      #node1.vm.network :public_network, ip: "10.0.200.100"
+      #node1.vm.synced_folder "./db-dump", "/db-dump"
+      node1.vm.provider "virtualbox" do |vb|
+        vb.name = 'lab-pgsql01'
+        vb.cpus = 2
+        vb.memory = 2048
+        vb.customize ["modifyvm", :id, "--cpu-profile", "host"]
+        vb.customize ["modifyvm", :id, "--nested-hw-virt", "on"]
+        vb.customize ["modifyvm", :id, "--nat-localhostreachable1", "on"]
+        vb.customize ["modifyvm", :id, "--graphicscontroller", "vboxsvga"]
+        vb.customize ["modifyvm", :id, "--accelerate3d", "off"]
+      end
+      node1.vm.provision :ansible do |ansible|
+        ansible.playbook = 'ansible/pgsql-install.yml'
+        ansible.verbose = true
+        ansible.extra_vars = {
+          postgresql_version: 16
+        }
+      end
+      node1.vm.provision :ansible do |ansible|
+        ansible.playbook = 'ansible/timescale-install.yml'
+        ansible.verbose = true
+        ansible.extra_vars = {
+          postgresql_mversion: '16'
+          #timescaledb_version: '2.15.1'
+        }
+      end
+  end  
+  # config.vm.define :'lab-pgsql02' do |node2|
+  #     node2.vm.box = 'generic-x64/debian12'
+  #     node2.vm.hostname = 'lab-pgsql02'
+  #     #node2.vm.network "private_network", ip: "192.168.56.11"
+  #     node2.vm.provider "virtualbox" do |vb|
+  #       vb.name = 'lab-pgsql02'
+  #       vb.cpus = 2
+  #       vb.memory = 2048
+  #       vb.customize ["modifyvm", :id, "--cpu-profile", "host"]
+  #       vb.customize ["modifyvm", :id, "--nested-hw-virt", "on"]
+  #       vb.customize ["modifyvm", :id, "--nat-localhostreachable1", "on"]
+  #       vb.customize ["modifyvm", :id, "--graphicscontroller", "vboxsvga"]
+  #       vb.customize ["modifyvm", :id, "--accelerate3d", "off"]
+  #     end
+  #     node2.vm.provision :ansible do |ansible|
+  #       ansible.playbook = 'ansible/pgsql-install.yml'
+  #       ansible.verbose = true
+  #       ansible.extra_vars = {
+  #         postgresql_version: 17
+  #       }
+  #     end
+#   end
+#   config.vm.define :'lab-pgsql03' do |node3|
+#       node3.vm.box = 'generic/ubuntu1604'
+#       node3.vm.hostname = 'lab-pgsql03'
+#       #node3.vm.network "private_network", ip: "192.168.56.11"
+#       node3.vm.provider "virtualbox" do |vb|
+#         vb.name = 'lab-pgsql03'
+#         vb.cpus = 2
+#         vb.memory = 2048
+#         vb.customize ["modifyvm", :id, "--cpu-profile", "host"]
+#         vb.customize ["modifyvm", :id, "--nested-hw-virt", "on"]
+#         vb.customize ["modifyvm", :id, "--nat-localhostreachable1", "on"]
+#         vb.customize ["modifyvm", :id, "--graphicscontroller", "vboxsvga"]
+#         vb.customize ["modifyvm", :id, "--accelerate3d", "off"]
+#       end
+#       node3.vm.provision :ansible do |ansible|
+#         ansible.playbook = 'ansible/pgsql-install-9.5.yml'
+#         ansible.verbose = true
+#         ansible.extra_vars = {
+#           postgresql_version: 9.5
+#         }
+#       end
+#   end
+end

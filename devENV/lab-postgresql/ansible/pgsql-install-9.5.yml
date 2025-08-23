@@ -1,0 +1,51 @@
+---
+- name: postgresql Playbook
+  hosts: all
+  become: true
+  vars:
+    postgresql_bin_path: "/usr/lib/postgresql/{{ postgresql_version }}/bin"
+    postgresql_data_dir: "/var/lib/postgresql/{{ postgresql_version }}/main"
+    ansible_ssh_pipelining: true
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install PostgreSQL and contrib
+      apt:
+        name:
+          - postgresql-{{ postgresql_version }}
+          - postgresql-contrib-{{ postgresql_version }}
+        state: present
+
+    - name: Check if postgres is installed
+      command: psql --version
+      register: pg_version
+      changed_when: false
+      failed_when: pg_version.rc != 0
+
+    - debug:
+        var: pg_version.stdout
+  
+    # - name: Check if PostgreSQL is initialized
+    #   ansible.builtin.stat:
+    #     path: "{{ postgresql_data_dir }}/pg_hba.conf"
+    #   register: postgres_data
+
+    # - name: Empty data dir
+    #   ansible.builtin.file:
+    #     path: "{{ postgresql_data_dir }}"
+    #     state: absent
+    #   when: not postgres_data.stat.exists
+
+    # - name: Initialize PostgreSQL
+    #   ansible.builtin.shell: "{{ postgresql_bin_path }}/initdb -D {{ postgresql_data_dir }}"
+    #   become: true
+    #   become_user: postgres
+    #   when: not postgres_data.stat.exists
+
+    # - name: Start and enable service
+    #   ansible.builtin.service:
+    #     name: postgresql
+    #     state: started
+    #     enabled: true

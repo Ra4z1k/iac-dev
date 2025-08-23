@@ -28,6 +28,9 @@ Vagrant.configure("2") do |config|
         vb.auto_stop_action = "ShutDown"
       node2.vm.provision "shell",
       name: "postgresql-17", path: "init-setup/pgsql17-init.sh", privileged: true
+      #node2.vm.provision "shell",
+      #name: "postgresql-17", path: "init-setup/pgsql17-init.sh", privileged: true
+
     end
   end
 end
